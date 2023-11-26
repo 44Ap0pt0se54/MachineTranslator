@@ -108,9 +108,6 @@ def prepareData(lang1, lang2, reverse=False, data_txt='eng-deu.txt'):
     print(output_lang.name, output_lang.n_words)
     return input_lang, output_lang, pairs
 
-input_lang, output_lang, pairs = prepareData('eng', 'deu', False)
-print(random.choice(pairs))
-
 class EncoderRNN(nn.Module):
     def __init__(self, input_size, hidden_size, dropout_p=0.1):
         super(EncoderRNN, self).__init__()
