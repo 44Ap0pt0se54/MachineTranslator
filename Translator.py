@@ -304,20 +304,43 @@ class Translator:
     def __init__(self):
         self.encoder
         self.decoder
+        self.hidden_size = 128
+        self.batch_size = 32
 
     def load(self):
-        hidden_size = 128
-        batch_size = 32
+    
+        input_lang, output_lang, train_dataloader = get_dataloader(self.batch_size)
 
-        input_lang, output_lang, train_dataloader = get_dataloader(batch_size)
-
-        self.encoder = EncoderRNN(input_lang.n_words, hidden_size).to(device)
+        self.encoder = EncoderRNN(input_lang.n_words, self.hidden_size).to(device)
         self.encoder.load_state_dict(torch.load("encoder_1.pth"))
         print("encoder loaded successfully...")
 
-        self.decoder = AttnDecoderRNN(hidden_size, output_lang.n_words).to(device)
+        self.decoder = AttnDecoderRNN(self.hidden_size, output_lang.n_words).to(device)
         self.decoder.load_state_dict(torch.load("decoder_1.pth"))
         print("decoder loaded successfully...")
+
+    def test_model(self):
+        input_lang, output_lang, test_dataloader = get_dataloader(self.batch_size, 'test_data.txt')
+        test_loss = loss_on_test(test_dataloader, self.encoder, self.decoder, nn.NLLLoss())
+        print("Loss NLL on test data: ", test_loss)
+
+    def test_random(self, n):
+        input_lang, output_lang, pairs = prepareData('eng', 'deu', False, data_txt='eng-deu.txt')
+        input_lang, output_lang, test_dataloader = get_dataloader(self.batch_size, 'eng-deu.txt')
+        for i in range(n):
+            pair = random.choice(pairs)
+            print('>', pair[0])
+            print('=', pair[1])
+            output_words, _ = evaluate(self.encoder, self.decoder, pair[0], input_lang, output_lang)
+            output_sentence = ' '.join(output_words)
+            print('<', output_sentence)
+            print('')
+
+    def translate_sentence(self, input_sentence):
+        input_lang, output_lang, test_dataloader = get_dataloader(self.batch_size, 'eng-deu.txt')
+        output_words, attentions = evaluate(self.encoder, self.decoder, input_sentence, input_lang, output_lang)
+        print('input =', input_sentence)
+        print('output =', ' '.join(output_words))
 
     def test_model(self):
         input_lang, output_lang, test_dataloader = get_dataloader(batch_size, 'test_data.txt')
