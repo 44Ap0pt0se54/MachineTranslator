@@ -302,8 +302,6 @@ def loss_on_test(dataloader, encoder, decoder, criterion):
 class Translator:
 
     def __init__(self):
-        self.encoder
-        self.decoder
         self.hidden_size = 128
         self.batch_size = 32
 
