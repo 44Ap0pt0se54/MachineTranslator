@@ -339,8 +339,3 @@ class Translator:
         output_words, attentions = evaluate(self.encoder, self.decoder, input_sentence, input_lang, output_lang)
         print('input =', input_sentence)
         print('output =', ' '.join(output_words))
-
-    def test_model(self):
-        input_lang, output_lang, test_dataloader = get_dataloader(batch_size, 'test_data.txt')
-        test_loss = loss_on_test(test_dataloader, encoder, decoder, nn.NLLLoss())
-        print("Loss NLL on test data: ", test_loss)
